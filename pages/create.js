@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import axios from 'axios'
 import {
   Form,
   Input,
@@ -9,6 +10,7 @@ import {
   Header,
   Icon,
 } from 'semantic-ui-react'
+import baseUrl from '../utils/baseUrl'
 
 const INITIAL_PRODUCT = {
   name: '',
@@ -21,6 +23,7 @@ const CreateProduct = () => {
   const [product, setProduct] = useState(INITIAL_PRODUCT)
   const [mediaPreview, setMediaPreview] = useState('')
   const [success, setSuccess] = useState(false)
+  const [loading, setLoading] = useState(false)
 
   const handleChange = event => {
     const { name, value, files } = event.target
@@ -32,10 +35,25 @@ const CreateProduct = () => {
     }
   }
 
-  const handleSubmit = event => {
-    event.preventDefault()
+  const handleImageUpload = async () => {
+    const data = new FormData()
+    data.append('file', product.media)
+    data.append('upload_preset', 'react-reserve')
+    data.append('cloud_name', 'dow0vsklq')
+    const response = await axios.post(process.env.CLOUDINARY_URL, data)
+    const mediaUrl = response.data.url
+    return mediaUrl
+  }
 
-    console.log(product)
+  const handleSubmit = async event => {
+    event.preventDefault()
+    setLoading(true)
+    const mediaUrl = await handleImageUpload()
+    const url = `${baseUrl}/api/product`
+    const { name, price, description } = product
+    const payload = { name, price, description, mediaUrl }
+    const response = await axios.post(url, payload)
+    setLoading(false)
     setProduct(INITIAL_PRODUCT)
     setSuccess(true)
   }
@@ -46,7 +64,7 @@ const CreateProduct = () => {
         <Icon name="add" color="orange" />
         Create New Product
       </Header>
-      <Form success={success} onSubmit={handleSubmit}>
+      <Form loading={loading} success={success} onSubmit={handleSubmit}>
         <Message
           success
           icon="check"
@@ -94,6 +112,7 @@ const CreateProduct = () => {
         />
         <Form.Field
           control={Button}
+          disabled={loading}
           color="blue"
           icon="pencil alternate"
           content="Submit"
