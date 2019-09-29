@@ -11,7 +11,7 @@ import {
   Icon,
 } from 'semantic-ui-react'
 import baseUrl from '../utils/baseUrl'
-import catchError from '../utils/catchErrors'
+import catchErrors from '../utils/catchErrors'
 
 const INITIAL_PRODUCT = {
   name: '',
@@ -66,9 +66,9 @@ const CreateProduct = () => {
       setProduct(INITIAL_PRODUCT)
       setSuccess(true)
     } catch (error) {
-      // catchError figures out where to get info about the error
+      // catchErrors figures out where to get info about the error
       // and display the error to client
-      catchError(error, setError)
+      catchErrors(error, setError)
     } finally {
       setLoading(false)
     }

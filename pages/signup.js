@@ -56,7 +56,7 @@ const Signup = () => {
         color="teal"
       />
       <Form loading={loading} error={Boolean(error)} onSubmit={handleSubmit}>
-        <Message error header="Oops!" context={error} />
+        <Message error header="Oops!" content={error} />
         <Segment>
           <Form.Input
             fluid
