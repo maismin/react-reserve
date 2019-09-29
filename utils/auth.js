@@ -20,5 +20,7 @@ export const redirectUser = (ctx, location) => {
 
 export const handleLogout = () => {
   cookie.remove('token')
+  // use localStorage for universal logout
+  window.localStorage.setItem('logout', Date.now())
   Router.push('/login')
 }
