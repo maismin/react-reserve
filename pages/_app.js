@@ -14,8 +14,9 @@ class MyApp extends App {
       pageProps = await Component.getInitialProps(ctx)
     }
 
+    // User isn't authenticated
     if (!token) {
-      // User isn't authenticated
+      // is protected route access?
       const isProtectedRoute =
         ctx.pathname === '/account' || ctx.pathname === '/create'
       if (isProtectedRoute) {
@@ -29,6 +30,14 @@ class MyApp extends App {
         const payload = { headers: { authorization: token } }
         const response = await axios.get(url, payload)
         const user = response.data
+        const isRoot = user.role === 'root'
+        const isAdmin = user.role === 'admin'
+        // if authenticated, but not admin or root, redirect from /create page
+        const isNotPermitted =
+          !(isRoot || isAdmin) && ctx.pathname === '/create'
+        if (isNotPermitted) {
+          redirectUser(ctx, '/')
+        }
         pageProps.user = user
       } catch (error) {
         console.error('Error getting current user', error)
